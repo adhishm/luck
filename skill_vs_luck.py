@@ -77,6 +77,41 @@ def simulate_selection(
     top_candidates = select_top_candidates(total_scores, num_candidates)
     return top_candidates, all_candidates
 
+def simulate_selection_for_population(
+    population:dict, # pre-generated population with assigned skill and luck scores
+    num_candidates:int=1000,
+    luck_weight:int=0.05,
+    reset_luck:bool=False,
+    reset_skill:bool=False):
+    """
+    Simulate the selection of top candidates from a population of players.
+    Args:
+        population (dict): A dictionary of the indices of all candidates.
+        num_candidates (int): The number of top candidates to select. Default is 1,000.
+        luck_weight (float): The weight of luck in the total score. Default is 0.05.
+        reset_luck (bool): If True, re-generate luck scores. Default is False.
+        reset_skill (bool): If True, re-generate skill scores. Default is False.
+    
+    Returns:
+        top_candidates (list): A list of the indices of the top candidates.
+        all_candidates (dict): A dictionary of the indices of all candidates.
+    """
+
+    if reset_luck:
+        population["luck_scores"] = np.random.normal(0.5, 0.2, len(population["skill_scores"]))
+
+    if reset_skill:
+        population["skill_scores"] = np.random.normal(0.5, 0.2, len(population["luck_scores"]))
+
+    if reset_luck or reset_skill:
+        # recalculating total scores
+        population["total_scores"] = total_score(
+            population["skill_scores"], 
+            population["luck_scores"], 
+            luck_weight)
+
+    top_candidates = select_top_candidates(population["total_scores"], num_candidates)
+    return top_candidates, population
 
 def plot_scores_distributions(
         all_candidates:dict,
