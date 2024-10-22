@@ -77,3 +77,38 @@ def simulate_selection(
     top_candidates = select_top_candidates(total_scores, num_candidates)
     return top_candidates, all_candidates
 
+
+def plot_scores_distributions(
+        all_candidates:dict,
+        selected_candidates:list,
+        attribute:str):
+    
+    """
+    Plot the distribution of the given attribute for all and selected candidates.
+    Args:
+        all_candidates (dict): A dictionary of the indices of all candidates.
+        selected_candidates (list): A list of the indices of the selected candidates.
+        attribute (str): The attribute to plot. 
+            Must be one of 'skill_scores', 'luck_scores', or 'total_scores'.
+    """
+
+    if attribute not in ('skill_scores', 'luck_scores', 'total_scores'):
+        raise ValueError("Attribute must be one of 'skill_scores', 'luck_scores', or 'total_scores'.")
+
+    fig = plt.figure(figsize=(12, 6))
+    plt.subplot(1, 2, 1)
+    selected_scores = np.array([all_candidates[attribute][candidate] for candidate in selected_candidates]).flatten()
+    _ = plt.hist(selected_scores, bins=100)
+    plt.xlabel(attribute)
+    plt.ylabel('Number of Candidates')
+    _ = plt.xticks(np.arange(-0.5, 2.0, 0.5))
+    plt.title('Selected Candidates')
+    plt.subplot(1, 2, 2)
+    entire_population_scores = np.array(all_candidates[attribute]).flatten()
+    _ = plt.hist(entire_population_scores, bins=100)
+    plt.xlabel(attribute)
+    plt.ylabel('Number of Candidates')
+    _ = plt.xticks(np.arange(-0.5, 2.0, 0.5))
+    plt.title('Entire Population')
+    plt.show()
+    
